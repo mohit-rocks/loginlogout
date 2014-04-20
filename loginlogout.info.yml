@@ -4,3 +4,4 @@ description: 'Replaces any link to just user/login with user/login?destination=d
 package: Custom
 version: VERSION
 core: 8.x
+configure: loginlogout.settings
