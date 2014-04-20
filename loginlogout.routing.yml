@@ -1,0 +1,7 @@
+loginlogout.settings:
+  path: '/admin/config/loginlogout'
+  defaults:
+    _form: '\Drupal\loginlogout\Form\LoginLogoutSettingsForm'
+    _title: 'Login logout settings'
+  requirements:
+    _permission: 'administer site configuration'

@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * @file
+ * Allows users to create and organize related content in an outline.
+ */
+
+use Drupal\book\BookManagerInterface;
+use Drupal\Component\Utility\String;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Render\Element;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
+use Drupal\Core\Language\Language;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implementation of hook_user().
+ */
+function loginlogout_user_logout($account) {
+  if (!empty($_GET['destination'])) {
+    $account = \Drupal::currentUser();
+    $user_temp = $account;
+    $account = drupal_anonymous_user();
+    $item = menu_get_item($_GET['destination']);
+    if (empty($item['access'])) {
+      unset($_GET['destination']);
+      unset($_GET['destination']);
+    }
+    $account = $user_temp;
+  }
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function loginlogout_page_build(&$page) {
+
+  $account = \Drupal::currentUser();
+  global $user;
+  $path = drupal_get_path('module', 'loginlogout');
+
+  // Add js file.
+  $page['#attached']['js'][$path . '/loginlogout.js'] = array('every_page' => TRUE);
+  // Prevent running if on login form.
+  if ((current_path() == 'user' || current_path() == 'user/login')) {
+    return;
+  }
+
+  $destination = drupal_get_destination();
+  $settings = array(
+    'loginlogout' => array(
+      'urls' => array(),
+    ),
+  );
+
+  $options = array(
+    'query' => $destination,
+  );
+
+  $purl_options = array(
+    'purl' => array(
+      'disabled' => TRUE,
+    ),
+  );
+
+  $purl_options_with_dest = array(
+    'query' => $destination,
+    'purl' => array(
+      'disabled' => TRUE,
+    ),
+  );
+
+  $config_path = \Drupal::config('loginlogout.settings')->get('loginlogout_urls');
+  $paths = explode("\n", $config_path);
+
+  foreach ($paths as $path) {
+    if (($path = trim($path)) && ($url = url($path))) {
+      // User is not a relavent url for
+      if ($path == 'user' && $user->id() > 0) {
+        continue;
+      }
+      $settings['loginlogout']['urls'][$url] = url($path, $options);
+      if (module_exists('purl') && ($url = url($path, $purl_options))) {
+        $settings['loginlogout']['urls'][$url] = url($path, $purl_options_with_dest);
+      }
+    }
+  }
+
+  _drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
+}
+

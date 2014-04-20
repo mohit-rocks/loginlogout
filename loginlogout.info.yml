@@ -1,0 +1,6 @@
+name: LoginLogout
+type: module
+description: 'Replaces any link to just user/login with user/login?destination=destination so user returns from whence they came. Verifies user has access to logout place, else returns then to homepage. Nice with lightbox login'
+package: Custom
+version: VERSION
+core: 8.x

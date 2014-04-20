@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the loginlogout module.
+ *
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function loginlogout_install() {
+  module_set_weight('loginlogout', -6);
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function loginlogout_uninstall() {
+  \Drupal::config('loginlogout.settings')->delete();
+}
